@@ -23,7 +23,7 @@ public class AuthServiceImpl implements AuthService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
     public static final String AUTHORIZER_ACCESS_TOKEN_PREFIX = "authorizer_access_token:";
-
+    public static final String AUTHORIZER_INFO_PREFIX = "authorizer_info:";
     private String appId = ConfigUtil.getString("wx.component_appid");
     private String encodingAesKey = ConfigUtil.getString("wx.encoding_aes_key");
     private String token = ConfigUtil.getString("wx.token");
@@ -99,7 +99,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthorizerInfoResult getAuthorizerInfo(String appId) {
         String componentAccessToken = getComponentAccessToken();
-        AuthorizerInfoResult authorizerInfo = AuthAPI.getAuthorizerInfo(componentAccessToken, appId);
+
+        AuthorizerInfoResult authorizerInfo = RedisTemplate.get(AUTHORIZER_INFO_PREFIX + appId, AuthorizerInfoResult.class);
+        if(authorizerInfo == null){
+            authorizerInfo = AuthAPI.getAuthorizerInfo(componentAccessToken, appId);
+            RedisTemplate.setex(AUTHORIZER_INFO_PREFIX + appId, 600, authorizerInfo);// default 10 minutes
+        }
         return authorizerInfo;
     }
 
@@ -135,7 +140,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void autoRefreshAccessToken() {
-        String keyPattern = "authorizer_access_token:*";
+        String keyPattern = AUTHORIZER_ACCESS_TOKEN_PREFIX + "*";
         Set<String> keys = RedisTemplate.keys(keyPattern);
         if (keys != null && !keys.isEmpty()) {
             for (String key : keys) {
