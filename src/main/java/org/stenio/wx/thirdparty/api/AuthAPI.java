@@ -41,7 +41,7 @@ public class AuthAPI {
         return JsonUtil.parse(responseBody, AuthorizerInfoResult.class);
     }
 
-    public static AuthorizerTokenResult refreshAccessToken(String componentAccessToken, String authorizerAppid,
+    public static AuthorizerAccessToken refreshAccessToken(String componentAccessToken, String authorizerAppid,
                                                            String authorizerRefreshToken) {
         Map<String, String> params = new HashMap<>();
         params.put("component_appid", COMPONENT_APPID);
@@ -50,7 +50,7 @@ public class AuthAPI {
         String url = "https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token="
                 + componentAccessToken;
         String responseBody = HttpClient.postJson(url, params);
-        AuthorizerTokenResult result = JsonUtil.parse(responseBody, AuthorizerTokenResult.class);
+        AuthorizerAccessToken result = JsonUtil.parse(responseBody, AuthorizerAccessToken.class);
         result.setAuthorizer_appid(authorizerAppid);
         return result;
 

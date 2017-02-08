@@ -1,6 +1,6 @@
 package org.stenio.wx.thirdparty.api;
 
-public class AuthorizerTokenResult {
+public class AuthorizerAccessToken {
 	
 	private String authorizer_appid;
 
@@ -9,6 +9,16 @@ public class AuthorizerTokenResult {
 	private int expires_in;
 	
 	private String authorizer_refresh_token;
+
+	public AuthorizerAccessToken() {
+	}
+
+	public AuthorizerAccessToken(String authorizer_appid, String authorizer_access_token, int expires_in, String authorizer_refresh_token) {
+		this.authorizer_appid = authorizer_appid;
+		this.authorizer_access_token = authorizer_access_token;
+		this.expires_in = expires_in;
+		this.authorizer_refresh_token = authorizer_refresh_token;
+	}
 
 	public String getAuthorizer_appid() {
 		return authorizer_appid;

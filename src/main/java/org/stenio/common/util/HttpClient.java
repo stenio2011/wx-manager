@@ -127,7 +127,6 @@ public class HttpClient {
 
     public static String postJson(String url, String json) {
         JSONEntity entity = new JSONEntity(json);
-        entity.setChunked(true);
         HttpPost httpPost = new HttpPost(url);
         httpPost.setEntity(entity);
         return invoke(httpPost);
@@ -175,13 +174,6 @@ public class HttpClient {
             logger.error("client protocol exception", e);
         } catch (IOException e) {
             logger.error("io exception", e);
-        } finally {
-            if (response != null) {
-                try {
-                    response.close();
-                } catch (IOException e) {
-                }
-            }
         }
         return response;
     }

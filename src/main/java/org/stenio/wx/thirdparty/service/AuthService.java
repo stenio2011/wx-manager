@@ -15,6 +15,7 @@ public interface AuthService {
 
     void refreshAccessToken(String appId);
 
-    void doAuth(String authCode);
+    AuthorizerInfoResult doAuth(String authCode);
 
+    void autoRefreshAccessToken();
 }
