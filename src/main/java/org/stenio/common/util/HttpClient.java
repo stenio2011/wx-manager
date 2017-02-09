@@ -180,24 +180,35 @@ public class HttpClient {
 
     private static String parseResponse(HttpResponse response) {
         logger.info("get response from http server..");
-
-        StatusLine statusLine = response.getStatusLine();
-        if (statusLine.getStatusCode() >= 300) {
-            logger.error("invalid request, status code : {}", statusLine.getStatusCode());
-            return null;
-        }
-        HttpEntity entity = response.getEntity();
-        logger.info("response status: " + response.getStatusLine());
-        ContentType contentType = ContentType.getOrDefault(entity);
-        Charset charset = contentType.getCharset() == null ? Consts.UTF_8 : contentType.getCharset();
+        CloseableHttpResponse closeableHttpResponse = null;
         String body = null;
         try {
+            if (response instanceof CloseableHttpResponse) {
+                closeableHttpResponse = (CloseableHttpResponse) response;
+            }
+            StatusLine statusLine = response.getStatusLine();
+            if (statusLine.getStatusCode() >= 300) {
+                logger.error("invalid request, status code : {}", statusLine.getStatusCode());
+                return null;
+            }
+            HttpEntity entity = response.getEntity();
+            logger.info("response status: " + response.getStatusLine());
+            ContentType contentType = ContentType.getOrDefault(entity);
+            Charset charset = contentType.getCharset() == null ? Consts.UTF_8 : contentType.getCharset();
             body = EntityUtils.toString(entity, charset);
             logger.info(body);
         } catch (ParseException e) {
             logger.error("parse exception", e);
         } catch (IOException e) {
             logger.error("io exception", e);
+        } finally {
+            if (closeableHttpResponse != null) {
+                try {
+                    closeableHttpResponse.close();
+                } catch (IOException e) {
+
+                }
+            }
         }
         return body;
     }
